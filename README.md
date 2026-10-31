@@ -2,7 +2,6 @@
 
 Landing page de Juanse Durando, DJ de Santa Fe capital (Argentina).
 
-- [Clasificación del material](docs/CLASIFICACION.md)
 
 ## Correr en tu compu
 
