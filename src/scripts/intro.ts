@@ -2,7 +2,9 @@ import { gsap } from 'gsap';
 
 const SEEN_KEY = 'jd-intro-visto';
 const BEAT = 60 / 124; // segundos por pulso a 124 BPM
-const MIN_LOAD = 1.8; // el contador nunca dura menos que esto
+// La mayoría de las visitas llegan desde el navegador de Instagram, donde la paciencia es menor
+const IN_APP = /Instagram|FBAN|FBAV/i.test(navigator.userAgent);
+const MIN_LOAD = IN_APP ? 1 : 1.8; // el contador nunca dura menos que esto
 
 // Imágenes que conviene tener cargadas antes de abrir la página
 const CRITICAL = ['img/intro-1600.webp', 'img/hero-1600.webp'];
@@ -202,4 +204,8 @@ export function runIntro({ onExitStart, onDone }: IntroOptions) {
   window.addEventListener('keydown', onKey);
   enter.addEventListener('click', exit);
   skip.addEventListener('click', exit);
+  // En celular, tocar en cualquier parte también entra
+  root.addEventListener('click', () => {
+    if (ready) exit();
+  });
 }

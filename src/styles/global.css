@@ -207,6 +207,18 @@ button {
   visibility: hidden;
 }
 
+.intro__enter-touch {
+  display: none;
+}
+@media (hover: none) {
+  .intro__enter-desk {
+    display: none;
+  }
+  .intro__enter-touch {
+    display: inline;
+  }
+}
+
 .intro__arrow {
   position: relative;
   width: 1px;
