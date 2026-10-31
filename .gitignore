@@ -1,0 +1,17 @@
+# Material original pesado: queda en D:\Mate.Dev\Juanse D, no en el repo
+*.zip
+material-original/
+01_Logos/
+02_Fotos-Estudio/
+03_Fotos-En-Vivo/
+04_Videos/
+*.mp4
+*.mov
+
+node_modules/
+dist/
+.astro/
+.netlify/
+.env
+.DS_Store
+Thumbs.db
