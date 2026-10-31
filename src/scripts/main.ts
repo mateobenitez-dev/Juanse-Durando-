@@ -5,7 +5,6 @@ import { runIntro } from './intro';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canHover = matchMedia('(hover: hover)').matches;
 
 // Scroll suave, sincronizado con ScrollTrigger. En pantallas táctiles queda el scroll nativo.
@@ -52,7 +51,12 @@ if (stories) {
 
   const show = (i: number) => {
     current = (i + slides.length) % slides.length;
-    slides.forEach((s, n) => s.classList.toggle('is-active', n === current));
+    const n = slides.length;
+    slides.forEach((s, i) => {
+      s.classList.toggle('is-active', i === current);
+      s.classList.toggle('is-prev', i === (current - 1 + n) % n);
+      s.classList.toggle('is-next', i === (current + 1) % n);
+    });
     bars.forEach((b, n) => gsap.set(b, { scaleX: n < current ? 1 : 0 }));
     fill?.kill();
     fill = gsap.to(bars[current], {
@@ -133,7 +137,7 @@ gsap.utils.toArray<HTMLElement>('.galeria__item').forEach((el) => {
   });
 });
 
-if (!reduced) {
+{
   // Hero: parallax de la foto y fade del contenido
   gsap.to('[data-hero-media] img', {
     yPercent: 15,
@@ -189,7 +193,7 @@ if (!reduced) {
   });
 }
 
-if (!reduced && canHover) {
+if (canHover) {
   // Botones magnéticos
   document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((btn) => {
     const xTo = gsap.quickTo(btn, 'x', { duration: 0.6, ease: 'elastic.out(1, 0.4)' });
