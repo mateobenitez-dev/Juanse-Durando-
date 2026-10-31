@@ -7,20 +7,20 @@ import { site, isSet, whatsappLink } from '../data/site';
 
 // Eventos de ejemplo: reemplazar por las fechas reales que pase Juanse
 const eventos = [
-  { fecha: 'PENDIENTE', lugar: 'Fiesta U', ciudad: 'Santa Fe', img: '/img/vivo-fiesta-u-640.webp' },
-  { fecha: 'PENDIENTE', lugar: 'Evento al aire libre', ciudad: 'Santa Fe', img: '/img/vivo-escenario-900.webp' },
-  { fecha: 'PENDIENTE', lugar: 'Boliche', ciudad: 'Santa Fe', img: '/img/vivo-azul-900.webp' },
-  { fecha: 'PENDIENTE', lugar: 'Evento privado', ciudad: 'Santa Fe', img: '/img/vivo-cabina-900.webp' },
+  { fecha: 'PENDIENTE', lugar: 'Fiesta U', ciudad: 'Santa Fe', img: 'img/vivo-fiesta-u-640.webp' },
+  { fecha: 'PENDIENTE', lugar: 'Evento al aire libre', ciudad: 'Santa Fe', img: 'img/vivo-escenario-900.webp' },
+  { fecha: 'PENDIENTE', lugar: 'Boliche', ciudad: 'Santa Fe', img: 'img/vivo-azul-900.webp' },
+  { fecha: 'PENDIENTE', lugar: 'Evento privado', ciudad: 'Santa Fe', img: 'img/vivo-cabina-900.webp' },
 ];
 
 const galeria = [
-  { src: '/img/vivo-escenario-900.webp', alt: 'Juanse Durando en escenario con su logo de fondo' },
-  { src: '/img/vivo-azul-900.webp', alt: 'Juanse Durando pasando música con luces azules' },
-  { src: '/img/hero-800.webp', alt: 'Retrato de estudio de Juanse Durando con auriculares' },
-  { src: '/img/vivo-aire-libre-900.webp', alt: 'Juanse Durando en un evento al aire libre' },
-  { src: '/img/vivo-fiesta-u-640.webp', alt: 'Juanse Durando en Fiesta U, Santa Fe' },
-  { src: '/img/vivo-gorra-900.webp', alt: 'Juanse Durando con gorra y auriculares' },
-  { src: '/img/vivo-cabina-900.webp', alt: 'Juanse Durando en cabina' },
+  { src: 'img/vivo-escenario-900.webp', alt: 'Juanse Durando en escenario con su logo de fondo' },
+  { src: 'img/vivo-azul-900.webp', alt: 'Juanse Durando pasando música con luces azules' },
+  { src: 'img/hero-800.webp', alt: 'Retrato de estudio de Juanse Durando con auriculares' },
+  { src: 'img/vivo-aire-libre-900.webp', alt: 'Juanse Durando en un evento al aire libre' },
+  { src: 'img/vivo-fiesta-u-640.webp', alt: 'Juanse Durando en Fiesta U, Santa Fe' },
+  { src: 'img/vivo-gorra-900.webp', alt: 'Juanse Durando con gorra y auriculares' },
+  { src: 'img/vivo-cabina-900.webp', alt: 'Juanse Durando en cabina' },
 ];
 
 const marquee = ['Cachengue', 'Remix', 'Fiestas', 'Boliches', 'Eventos privados', 'Santa Fe'];
@@ -36,8 +36,8 @@ const redes = Object.entries(site.socials);
     <section class="hero" data-hero>
       <div class="hero__media" data-hero-media>
         <img
-          src="/img/hero-1600.webp"
-          srcset="/img/hero-800.webp 800w, /img/hero-1600.webp 1600w"
+          src="img/hero-1600.webp"
+          srcset="img/hero-800.webp 800w, img/hero-1600.webp 1600w"
           sizes="100vw"
           alt="Juanse Durando con auriculares, retrato de estudio"
           fetchpriority="high"
@@ -66,7 +66,7 @@ const redes = Object.entries(site.socials);
 
     <section class="bio section" id="bio">
       <div class="bio__img" data-reveal-img>
-        <img src="/img/bio-1200.webp" srcset="/img/bio-800.webp 800w, /img/bio-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="Juanse Durando con anteojos de sol" loading="lazy" />
+        <img src="img/bio-1200.webp" srcset="img/bio-800.webp 800w, img/bio-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="Juanse Durando con anteojos de sol" loading="lazy" />
       </div>
       <div class="bio__text">
         <p class="kicker" data-reveal>01 · Bio</p>
@@ -118,14 +118,14 @@ const redes = Object.entries(site.socials);
       <p class="kicker" data-reveal>04 · Video</p>
       <h2 class="h2" data-split>Así suena una noche</h2>
       <div class="video__wrap" data-reveal>
-        <video src="/video/reel-fiesta-u.mp4" poster="/img/reel-poster.jpg" muted loop playsinline preload="none" data-autoplay></video>
+        <video src="video/reel-fiesta-u.mp4" poster="img/reel-poster.jpg" muted loop playsinline preload="none" data-autoplay></video>
         <p class="placeholder">[Link a sets de SoundCloud / Spotify pendiente]</p>
       </div>
     </section>
 
     <section class="contacto section" id="contacto">
       <div class="contacto__img" data-reveal-img>
-        <img src="/img/contacto-1200.webp" srcset="/img/contacto-800.webp 800w, /img/contacto-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="Juanse Durando sentado sobre su flightcase" loading="lazy" />
+        <img src="img/contacto-1200.webp" srcset="img/contacto-800.webp 800w, img/contacto-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="Juanse Durando sentado sobre su flightcase" loading="lazy" />
       </div>
       <div class="contacto__text">
         <p class="kicker" data-reveal>05 · Contacto</p>

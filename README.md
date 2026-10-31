@@ -13,7 +13,7 @@ npm run dev      # http://localhost:4321
 npm run build    # genera dist/ para publicar
 ```
 
-Stack: Astro + GSAP (ScrollTrigger) + Lenis. Se publica en Netlify (`netlify.toml` ya está listo).
+Stack: Astro + GSAP (ScrollTrigger) + Lenis. Se publica sola en GitHub Pages con cada cambio en `main` (`.github/workflows/deploy.yml`). También está listo `netlify.toml` para cuando haya dominio propio.
 
 ## Dónde cambiar cosas
 
