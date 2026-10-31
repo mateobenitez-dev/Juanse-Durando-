@@ -5,7 +5,7 @@ const BEAT = 60 / 124; // segundos por pulso a 124 BPM
 const MIN_LOAD = 1.8; // el contador nunca dura menos que esto
 
 // Imágenes que conviene tener cargadas antes de abrir la página
-const CRITICAL = ['/img/intro-1600.webp', '/img/hero-1600.webp'];
+const CRITICAL = ['img/intro-1600.webp', 'img/hero-1600.webp'];
 
 type IntroOptions = {
   onExitStart?: () => void;
