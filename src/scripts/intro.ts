@@ -25,9 +25,9 @@ function preload(src: string) {
 export function runIntro({ onDone }: IntroOptions) {
   const root = document.getElementById('intro');
   const html = document.documentElement;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (!root || reduced) {
+  // No se respeta prefers-reduced-motion: muchas PCs con Windows lo traen activado
+  // ("efectos de animación" apagados) y la intro es parte central de la marca.
+  if (!root) {
     root?.remove();
     html.classList.remove('intro-active');
     onDone();

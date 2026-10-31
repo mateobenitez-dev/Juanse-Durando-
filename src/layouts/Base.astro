@@ -54,10 +54,7 @@ const jsonLd = {
     <link rel="preload" as="image" href="img/intro-poster.jpg" />
 
     <script is:inline>
-      document.documentElement.classList.add('js');
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.documentElement.classList.add('intro-active');
-      }
+      document.documentElement.classList.add('js', 'intro-active');
     </script>
     <noscript><style>.intro { display: none !important; }</style></noscript>
 
