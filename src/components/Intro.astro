@@ -7,27 +7,19 @@ import logo from './logo.svg?raw';
   <div class="intro__half intro__half--bottom" data-intro-half></div>
 
   <div class="intro__bg" data-intro-bg>
-    <img src="img/intro-1600.webp" srcset="img/intro-800.webp 800w, img/intro-1600.webp 1600w" sizes="100vw" alt="" />
+    <video src="video/intro-loop.mp4" poster="img/intro-poster.jpg" muted autoplay loop playsinline preload="auto"></video>
   </div>
   <div class="intro__grain" aria-hidden="true"></div>
-
-  <div class="intro__meta intro__meta--tl" data-intro-meta>Santa Fe · ARG</div>
-  <div class="intro__meta intro__meta--tr" data-intro-meta>DJ</div>
 
   <div class="intro__logo" data-intro-logo>
     <div class="intro__logo-inner" data-intro-logo-inner set:html={logo} />
     <span class="intro__scan" data-intro-scan aria-hidden="true"></span>
   </div>
 
-  <div class="intro__count" data-intro-meta aria-hidden="true">
-    <span data-intro-count>000</span><span class="intro__count-max">/100</span>
-  </div>
+  <div class="intro__bar" aria-hidden="true"><span data-intro-bar></span></div>
 
-  <button class="intro__enter" type="button" data-intro-enter>
-    <span class="intro__enter-desk">Deslizá para entrar</span>
-    <span class="intro__enter-touch">Deslizá o tocá para entrar</span>
-    <span class="intro__arrow" aria-hidden="true"></span>
+  <button class="intro__enter" type="button" aria-label="Entrar" data-intro-enter>
+    <span class="intro__chevron" aria-hidden="true"></span>
+    <span class="intro__chevron" aria-hidden="true"></span>
   </button>
-
-  <button class="intro__skip" type="button" data-intro-skip>Saltar intro</button>
 </div>

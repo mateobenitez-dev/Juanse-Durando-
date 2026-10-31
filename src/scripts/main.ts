@@ -8,7 +8,7 @@ gsap.registerPlugin(ScrollTrigger);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canHover = matchMedia('(hover: hover)').matches;
 
-// Scroll suave, sincronizado con ScrollTrigger
+// Scroll suave, sincronizado con ScrollTrigger. En pantallas táctiles queda el scroll nativo.
 const lenis = new Lenis({ autoRaf: false });
 lenis.on('scroll', ScrollTrigger.update);
 gsap.ticker.add((t) => lenis.raf(t * 1000));
@@ -26,35 +26,12 @@ runIntro({
   },
 });
 
-// Anclas del menú con scroll suave
-document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
-  a.addEventListener('click', (e) => {
-    const id = a.getAttribute('href')!;
-    if (id === '#') return;
-    const target = id === '#top' ? 0 : document.querySelector<HTMLElement>(id);
-    if (target === null) return;
-    e.preventDefault();
-    closeMenu();
-    lenis.scrollTo(target, { offset: 0, duration: 1.4 });
-  });
+document.querySelector('a[href="#top"]')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  lenis.scrollTo(0, { duration: 1.4 });
 });
 
-// Menú móvil
-const menu = document.querySelector<HTMLElement>('[data-menu]');
-const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
-function closeMenu() {
-  menu?.classList.remove('is-open');
-  menu?.setAttribute('aria-hidden', 'true');
-  toggle?.setAttribute('aria-expanded', 'false');
-}
-toggle?.addEventListener('click', () => {
-  const open = !menu?.classList.contains('is-open');
-  menu?.classList.toggle('is-open', open);
-  menu?.setAttribute('aria-hidden', String(!open));
-  toggle.setAttribute('aria-expanded', String(open));
-});
-
-// Header: se vuelve sólido y muestra el logo al pasar el hero
+// Header: aparece al pasar el hero
 const header = document.querySelector('[data-header]');
 ScrollTrigger.create({
   trigger: '[data-hero]',
@@ -63,15 +40,98 @@ ScrollTrigger.create({
   onLeaveBack: () => header?.classList.remove('is-solid'),
 });
 
-// Videos: solo se reproducen cuando están en pantalla
-const io = new IntersectionObserver((entries) => {
-  entries.forEach((e) => {
-    const v = e.target as HTMLVideoElement;
-    if (e.isIntersecting) v.play().catch(() => {});
-    else v.pause();
+// ---------- Stories ----------
+const stories = document.querySelector<HTMLElement>('[data-stories]');
+if (stories) {
+  const slides = stories.querySelectorAll<HTMLElement>('.stories__slide');
+  const bars = stories.querySelectorAll<HTMLElement>('.stories__bars i');
+  const DURATION = 4.5;
+  let current = 0;
+  let fill: gsap.core.Tween | null = null;
+  let visible = false;
+
+  const show = (i: number) => {
+    current = (i + slides.length) % slides.length;
+    slides.forEach((s, n) => s.classList.toggle('is-active', n === current));
+    bars.forEach((b, n) => gsap.set(b, { scaleX: n < current ? 1 : 0 }));
+    fill?.kill();
+    fill = gsap.to(bars[current], {
+      scaleX: 1,
+      duration: DURATION,
+      ease: 'none',
+      paused: !visible,
+      onComplete: () => show(current + 1),
+    });
+  };
+
+  stories.querySelector('[data-stories-next]')?.addEventListener('click', () => show(current + 1));
+  stories.querySelector('[data-stories-prev]')?.addEventListener('click', () => show(current - 1));
+
+  // Swipe horizontal
+  let x0 = 0;
+  stories.addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), { passive: true });
+  stories.addEventListener(
+    'touchend',
+    (e) => {
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+    },
+    { passive: true },
+  );
+
+  // Solo avanza mientras está en pantalla
+  ScrollTrigger.create({
+    trigger: stories,
+    start: 'top 60%',
+    end: 'bottom 40%',
+    onToggle: (self) => {
+      visible = self.isActive;
+      if (visible) fill?.play();
+      else fill?.pause();
+    },
+  });
+
+  show(0);
+}
+
+// ---------- Reels ----------
+const reels = document.querySelectorAll<HTMLElement>('.reel');
+const io = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((e) => {
+      const v = e.target as HTMLVideoElement;
+      if (e.isIntersecting) v.play().catch(() => {});
+      else v.pause();
+    });
+  },
+  { threshold: 0.4 },
+);
+document.querySelectorAll('video[data-autoplay]').forEach((v) => io.observe(v));
+
+reels.forEach((reel) => {
+  const video = reel.querySelector('video')!;
+  reel.querySelector('[data-sound]')?.addEventListener('click', () => {
+    const turnOn = video.muted;
+    // Un solo video con sonido a la vez
+    reels.forEach((r) => {
+      r.querySelector('video')!.muted = true;
+      r.classList.remove('is-sound');
+    });
+    video.muted = !turnOn;
+    reel.classList.toggle('is-sound', turnOn);
+    if (turnOn) video.play().catch(() => {});
   });
 });
-document.querySelectorAll('video[data-autoplay]').forEach((v) => io.observe(v));
+
+// ---------- Galería: pasa a color al entrar en pantalla ----------
+gsap.utils.toArray<HTMLElement>('.galeria__item').forEach((el) => {
+  ScrollTrigger.create({
+    trigger: el,
+    start: 'top 75%',
+    end: 'bottom 25%',
+    toggleClass: 'is-in',
+  });
+});
 
 if (!reduced) {
   // Hero: parallax de la foto y fade del contenido
@@ -87,104 +147,49 @@ if (!reduced) {
     scrollTrigger: { trigger: '[data-hero]', start: '40% top', end: 'bottom top', scrub: true },
   });
 
-  // Marquee: corre solo y acelera con la velocidad del scroll
-  const track = document.querySelector('[data-marquee]');
-  if (track) {
-    const loop = gsap.to(track, { xPercent: -50, duration: 22, ease: 'none', repeat: -1 });
-    ScrollTrigger.create({
-      onUpdate: (self) => {
-        const v = Math.min(Math.abs(self.getVelocity()) / 300, 6);
-        gsap.to(loop, { timeScale: (self.direction || 1) * (1 + v), duration: 0.2, overwrite: true });
-        gsap.to(loop, { timeScale: self.direction || 1, duration: 1.2, delay: 0.2 });
-      },
-    });
-  }
-
-  // Títulos: palabra por palabra
-  document.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {
-    const words = el.textContent!.trim().split(/\s+/);
-    el.setAttribute('aria-label', el.textContent!.trim());
-    el.innerHTML = words.map((w) => `<span class="word" aria-hidden="true"><span>${w}</span></span>`).join(' ');
-    gsap.from(el.querySelectorAll('.word > span'), {
-      yPercent: 110,
-      duration: 1,
-      stagger: 0.06,
-      ease: 'expo.out',
-      scrollTrigger: { trigger: el, start: 'top 85%' },
-    });
+  // Stories: entra con zoom desde abajo
+  gsap.from('[data-stories]', {
+    scale: 0.88,
+    borderRadius: 24,
+    ease: 'none',
+    scrollTrigger: { trigger: '[data-stories]', start: 'top bottom', end: 'top top', scrub: true },
   });
 
   // Bloques que aparecen al entrar en pantalla
   gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
     gsap.from(el, {
       autoAlpha: 0,
-      y: 40,
+      y: 50,
       duration: 1,
       ease: 'power3.out',
-      scrollTrigger: { trigger: el, start: 'top 90%' },
+      scrollTrigger: { trigger: el, start: 'top 92%' },
     });
   });
 
   // Fotos que se descubren de abajo hacia arriba
   gsap.utils.toArray<HTMLElement>('[data-reveal-img]').forEach((el) => {
     gsap
-      .timeline({ scrollTrigger: { trigger: el, start: 'top 80%' } })
-      .fromTo(el, { clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0% 0 0 0)', duration: 1.4, ease: 'expo.inOut' })
-      .from(el.querySelector('img'), { scale: 1.3, duration: 1.8, ease: 'expo.out' }, 0.2);
+      .timeline({ scrollTrigger: { trigger: el, start: 'top 90%' } })
+      .fromTo(el, { clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0% 0 0 0)', duration: 1.2, ease: 'expo.inOut' })
+      .from(el.querySelector('img'), { scale: 1.3, duration: 1.6, ease: 'expo.out' }, 0.15);
   });
 
-  // Galería: scroll horizontal mientras la sección queda fija
-  const galeria = document.querySelector<HTMLElement>('[data-galeria]');
-  const gTrack = document.querySelector<HTMLElement>('[data-galeria-track]');
-  if (galeria && gTrack) {
-    const distance = () => Math.max(0, gTrack.scrollWidth - window.innerWidth);
-    gsap.to(gTrack, {
-      x: () => -distance(),
-      ease: 'none',
-      scrollTrigger: {
-        trigger: galeria,
-        start: 'top top',
-        end: () => `+=${distance()}`,
-        pin: '.galeria__pin',
-        scrub: 1,
-        invalidateOnRefresh: true,
-      },
-    });
-  }
+  // Contacto: parallax de la foto y el logo que sube
+  gsap.to('[data-contact-media]', {
+    yPercent: 10,
+    ease: 'none',
+    scrollTrigger: { trigger: '.contacto', start: 'top bottom', end: 'bottom bottom', scrub: true },
+  });
+  gsap.from('.contacto__logo', {
+    yPercent: 60,
+    autoAlpha: 0,
+    duration: 1.2,
+    ease: 'expo.out',
+    scrollTrigger: { trigger: '.contacto', start: 'top 40%' },
+  });
 }
 
 if (!reduced && canHover) {
-  // Eventos: la foto sigue al cursor sobre cada fila
-  const float = document.querySelector<HTMLElement>('[data-eventos-float]');
-  const floatImg = float?.querySelector('img');
-  if (float && floatImg) {
-    const xTo = gsap.quickTo(float, 'x', { duration: 0.5, ease: 'power3' });
-    const yTo = gsap.quickTo(float, 'y', { duration: 0.5, ease: 'power3' });
-    let mx = 0;
-    let my = 0;
-    window.addEventListener('mousemove', (e) => {
-      mx = e.clientX;
-      my = e.clientY;
-      xTo(mx - float.offsetWidth / 2);
-      yTo(my - float.offsetHeight / 2);
-    });
-    // Al scrollear el cursor no se mueve, así que mouseleave no siempre dispara
-    lenis.on('scroll', () => {
-      if (!document.elementFromPoint(mx, my)?.closest('[data-evento]')) {
-        gsap.to(float, { autoAlpha: 0, scale: 0.6, duration: 0.3, overwrite: true });
-      }
-    });
-    document.querySelectorAll<HTMLElement>('[data-evento]').forEach((row) => {
-      row.addEventListener('mouseenter', () => {
-        floatImg.src = row.dataset.img!;
-        gsap.to(float, { autoAlpha: 1, scale: 1, duration: 0.4, ease: 'power3.out' });
-      });
-      row.addEventListener('mouseleave', () => {
-        gsap.to(float, { autoAlpha: 0, scale: 0.6, duration: 0.3 });
-      });
-    });
-  }
-
   // Botones magnéticos
   document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((btn) => {
     const xTo = gsap.quickTo(btn, 'x', { duration: 0.6, ease: 'elastic.out(1, 0.4)' });
