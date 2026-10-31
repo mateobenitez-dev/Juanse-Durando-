@@ -1,0 +1,69 @@
+---
+import '../styles/global.css';
+import { site, isSet } from '../data/site';
+
+const title = `${site.name} · DJ en Santa Fe, Argentina | Contrataciones`;
+const url = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.href;
+const ogImage = Astro.site ? new URL('/img/og-base.jpg', Astro.site).href : '/img/og-base.jpg';
+
+const sameAs = Object.values(site.socials).filter(isSet);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: 'DJ',
+  url,
+  image: ogImage,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: site.city,
+    addressRegion: site.region,
+    addressCountry: 'AR',
+  },
+  ...(sameAs.length && { sameAs }),
+  ...(isSet(site.whatsapp) && { telephone: `+${site.whatsapp}` }),
+  ...(isSet(site.email) && { email: site.email }),
+};
+---
+
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={site.description} />
+    <link rel="canonical" href={url} />
+    <meta name="theme-color" content="#0B0B0C" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={site.description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Unbounded:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preload" as="image" href="/img/intro-1600.webp" />
+
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('intro-active');
+      }
+    </script>
+    <noscript><style>.intro { display: none !important; }</style></noscript>
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
