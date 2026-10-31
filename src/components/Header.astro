@@ -1,0 +1,30 @@
+---
+import logo from './logo.svg?raw';
+import { whatsappLink } from '../data/site';
+
+const links = [
+  { href: '#bio', label: 'Bio' },
+  { href: '#eventos', label: 'Eventos' },
+  { href: '#galeria', label: 'Galería' },
+  { href: '#video', label: 'Video' },
+  { href: '#contacto', label: 'Contacto' },
+];
+---
+
+<header class="header" data-header>
+  <a href="#top" class="header__logo" aria-label="Juanse Durando, inicio" set:html={logo} />
+  <nav class="header__nav" aria-label="Principal">
+    {links.map((l) => <a href={l.href}>{l.label}</a>)}
+  </nav>
+  <a class="btn btn--accent header__cta" href={whatsappLink()} data-magnetic>Contratar</a>
+  <button class="header__burger" type="button" aria-label="Abrir menú" aria-expanded="false" data-menu-toggle>
+    <span></span><span></span>
+  </button>
+</header>
+
+<div class="menu" data-menu aria-hidden="true">
+  <nav aria-label="Menú móvil">
+    {links.map((l) => <a href={l.href} data-menu-link>{l.label}</a>)}
+  </nav>
+  <a class="btn btn--accent" href={whatsappLink()}>Contratar</a>
+</div>

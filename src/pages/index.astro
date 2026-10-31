@@ -1,0 +1,162 @@
+---
+import Base from '../layouts/Base.astro';
+import Intro from '../components/Intro.astro';
+import Header from '../components/Header.astro';
+import logo from '../components/logo.svg?raw';
+import { site, isSet, whatsappLink } from '../data/site';
+
+// Eventos de ejemplo: reemplazar por las fechas reales que pase Juanse
+const eventos = [
+  { fecha: 'PENDIENTE', lugar: 'Fiesta U', ciudad: 'Santa Fe', img: '/img/vivo-fiesta-u-640.webp' },
+  { fecha: 'PENDIENTE', lugar: 'Evento al aire libre', ciudad: 'Santa Fe', img: '/img/vivo-escenario-900.webp' },
+  { fecha: 'PENDIENTE', lugar: 'Boliche', ciudad: 'Santa Fe', img: '/img/vivo-azul-900.webp' },
+  { fecha: 'PENDIENTE', lugar: 'Evento privado', ciudad: 'Santa Fe', img: '/img/vivo-cabina-900.webp' },
+];
+
+const galeria = [
+  { src: '/img/vivo-escenario-900.webp', alt: 'Juanse Durando en escenario con su logo de fondo' },
+  { src: '/img/vivo-azul-900.webp', alt: 'Juanse Durando pasando música con luces azules' },
+  { src: '/img/hero-800.webp', alt: 'Retrato de estudio de Juanse Durando con auriculares' },
+  { src: '/img/vivo-aire-libre-900.webp', alt: 'Juanse Durando en un evento al aire libre' },
+  { src: '/img/vivo-fiesta-u-640.webp', alt: 'Juanse Durando en Fiesta U, Santa Fe' },
+  { src: '/img/vivo-gorra-900.webp', alt: 'Juanse Durando con gorra y auriculares' },
+  { src: '/img/vivo-cabina-900.webp', alt: 'Juanse Durando en cabina' },
+];
+
+const marquee = ['Cachengue', 'Remix', 'Fiestas', 'Boliches', 'Eventos privados', 'Santa Fe'];
+
+const redes = Object.entries(site.socials);
+---
+
+<Base>
+  <Intro />
+  <Header />
+
+  <main id="top">
+    <section class="hero" data-hero>
+      <div class="hero__media" data-hero-media>
+        <img
+          src="/img/hero-1600.webp"
+          srcset="/img/hero-800.webp 800w, /img/hero-1600.webp 1600w"
+          sizes="100vw"
+          alt="Juanse Durando con auriculares, retrato de estudio"
+          fetchpriority="high"
+        />
+      </div>
+      <div class="hero__shade" aria-hidden="true"></div>
+      <div class="hero__content">
+        <p class="hero__eyebrow" data-hero-line>DJ · Santa Fe, Argentina</p>
+        <h1 class="hero__title">
+          <span class="sr-only">Juanse Durando</span>
+          <span class="hero__logo" data-hero-logo aria-hidden="true" set:html={logo} />
+        </h1>
+        <div class="hero__actions" data-hero-line>
+          <a class="btn btn--accent" href={whatsappLink()} data-magnetic>Contratar</a>
+          <a class="btn btn--ghost" href="#eventos">Ver fechas</a>
+        </div>
+      </div>
+      <div class="hero__scroll" data-hero-line aria-hidden="true">Scroll</div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track" data-marquee>
+        {[0, 1].map(() => marquee.map((w) => <span>{w}<i>✦</i></span>))}
+      </div>
+    </div>
+
+    <section class="bio section" id="bio">
+      <div class="bio__img" data-reveal-img>
+        <img src="/img/bio-1200.webp" srcset="/img/bio-800.webp 800w, /img/bio-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="Juanse Durando con anteojos de sol" loading="lazy" />
+      </div>
+      <div class="bio__text">
+        <p class="kicker" data-reveal>01 · Bio</p>
+        <h2 class="h2" data-split>La pista de Santa Fe, a otro nivel.</h2>
+        <p class="lead placeholder" data-reveal>
+          [Bio pendiente] Acá va la historia de Juanse en 3 a 5 líneas: desde cuándo toca, qué estilos mezcla y dónde se lo puede escuchar.
+        </p>
+        <dl class="stats" data-reveal>
+          <div><dt data-count="0">+0</dt><dd>años en cabina</dd></div>
+          <div><dt data-count="0">+0</dt><dd>eventos</dd></div>
+          <div><dt data-count="0">+0</dt><dd>ciudades</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="eventos section" id="eventos">
+      <p class="kicker" data-reveal>02 · Eventos</p>
+      <h2 class="h2" data-split>Próximas fechas</h2>
+      <ul class="eventos__list" data-eventos>
+        {eventos.map((e) => (
+          <li class="evento" data-evento data-img={e.img} data-reveal>
+            <span class="evento__fecha">{e.fecha}</span>
+            <span class="evento__lugar">{e.lugar}</span>
+            <span class="evento__ciudad">{e.ciudad}</span>
+            <span class="evento__cta">Info →</span>
+          </li>
+        ))}
+      </ul>
+      <div class="eventos__float" data-eventos-float aria-hidden="true"><img alt="" /></div>
+    </section>
+
+    <section class="galeria" id="galeria" data-galeria>
+      <div class="galeria__pin">
+        <div class="galeria__head">
+          <p class="kicker">03 · Galería</p>
+          <h2 class="h2">En vivo</h2>
+        </div>
+        <div class="galeria__track" data-galeria-track>
+          {galeria.map((g) => (
+            <figure class="galeria__item">
+              <img src={g.src} alt={g.alt} loading="lazy" />
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="video section" id="video">
+      <p class="kicker" data-reveal>04 · Video</p>
+      <h2 class="h2" data-split>Así suena una noche</h2>
+      <div class="video__wrap" data-reveal>
+        <video src="/video/reel-fiesta-u.mp4" poster="/img/reel-poster.jpg" muted loop playsinline preload="none" data-autoplay></video>
+        <p class="placeholder">[Link a sets de SoundCloud / Spotify pendiente]</p>
+      </div>
+    </section>
+
+    <section class="contacto section" id="contacto">
+      <div class="contacto__img" data-reveal-img>
+        <img src="/img/contacto-1200.webp" srcset="/img/contacto-800.webp 800w, /img/contacto-1200.webp 1200w" sizes="(min-width: 900px) 45vw, 100vw" alt="Juanse Durando sentado sobre su flightcase" loading="lazy" />
+      </div>
+      <div class="contacto__text">
+        <p class="kicker" data-reveal>05 · Contacto</p>
+        <h2 class="h2" data-split>Llevalo a tu fiesta</h2>
+        <p class="lead" data-reveal>Boliches, fiestas, cumpleaños de 15, casamientos y eventos privados en Santa Fe y la región.</p>
+        <a class="btn btn--accent btn--big" href={whatsappLink()} data-magnetic data-reveal>WhatsApp contrataciones</a>
+        <ul class="redes" data-reveal>
+          {redes.map(([red, url]) =>
+            isSet(url) ? <li><a href={url} target="_blank" rel="noopener">{red}</a></li> : <li class="placeholder">{red} (pendiente)</li>
+          )}
+          <li class={isSet(site.email) ? '' : 'placeholder'}>
+            {isSet(site.email) ? <a href={`mailto:${site.email}`}>{site.email}</a> : 'mail (pendiente)'}
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__logo" set:html={logo} />
+    <div class="footer__row">
+      <span>Santa Fe · Argentina</span>
+      <span>© {new Date().getFullYear()} {site.name}</span>
+    </div>
+  </footer>
+
+  <a class="wa-float" href={whatsappLink()} aria-label="Escribir por WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+  </a>
+
+  <script>
+    import '../scripts/main';
+  </script>
+</Base>
