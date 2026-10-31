@@ -39,6 +39,7 @@ export function runIntro({ onDone }: IntroOptions) {
   const logoInner = q('[data-intro-logo-inner]');
   const scan = q('[data-intro-scan]');
   const bg = q('[data-intro-bg]');
+  const video = bg.querySelector('video');
   const bar = q('[data-intro-bar]');
   const enter = q<HTMLButtonElement>('[data-intro-enter]');
   const halves = root.querySelectorAll('[data-intro-half]');
@@ -58,6 +59,22 @@ export function runIntro({ onDone }: IntroOptions) {
 
   // 1. Entrada: video de fondo y barra de carga
   intro.fromTo(bg, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1.05, duration: seen ? 1 : 3, ease: 'power2.out' });
+  // Zoom lento y continuo: aunque el celular no deje reproducir el video, la escena nunca queda quieta
+  intro.to(bg, { scale: 1.2, duration: 14, ease: 'none', repeat: -1, yoyo: true });
+
+  // iPhone en ahorro de batería y el navegador de Instagram a veces frenan el autoplay:
+  // se reintenta al cargar, al volver a la pestaña y con el primer toque
+  const playVideo = () => {
+    if (video && video.paused) video.play().catch(() => {});
+  };
+  playVideo();
+  video?.addEventListener('canplay', playVideo);
+  video?.addEventListener('pause', () => {
+    if (!leaving && !document.hidden) setTimeout(playVideo, 300);
+  });
+  document.addEventListener('visibilitychange', playVideo);
+  window.addEventListener('touchstart', playVideo, { once: true, passive: true });
+  window.addEventListener('pointerdown', playVideo, { once: true });
 
   const loaded = { n: 0 };
   const progress = { v: 0 };
@@ -189,6 +206,7 @@ export function runIntro({ onDone }: IntroOptions) {
     window.removeEventListener('touchstart', onTouchStart);
     window.removeEventListener('touchmove', onTouchMove);
     window.removeEventListener('keydown', onKey);
+    document.removeEventListener('visibilitychange', playVideo);
   }
 
   window.addEventListener('wheel', onWheel, { passive: true });

@@ -117,6 +117,12 @@ button {
   object-position: 50% 30%;
   filter: grayscale(1) contrast(1.15) brightness(0.45);
 }
+/* Sin botón de play nativo de iOS si el autoplay queda bloqueado */
+.intro__bg video::-webkit-media-controls-start-playback-button,
+.intro__bg video::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
+}
 
 .intro__grain {
   position: absolute;
