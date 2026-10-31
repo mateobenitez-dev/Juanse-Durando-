@@ -142,6 +142,7 @@ export function runIntro({ onDone }: IntroOptions) {
 
     tl.to([enter, '.intro__bar'], { autoAlpha: 0, duration: 0.3 }, 0)
       .to(bg, { opacity: 0, scale: 1.2, duration: 1.1, ease: 'power2.in' }, 0)
+      .to('.intro__grain', { opacity: 0, duration: 1.4, ease: 'power1.inOut' }, 0.2)
       .to(halves[0], { yPercent: -100, duration: 1.8, ease: 'expo.inOut' }, 0.25)
       .to(halves[1], { yPercent: 100, duration: 1.8, ease: 'expo.inOut' }, 0.25);
 

@@ -1,5 +1,6 @@
 :root {
-  --bg: #0b0b0c;
+  /* Casi negro, igual al fondo de las fotos de estudio */
+  --bg: #050505;
   --fg: #f2eee9;
   --muted: #8d8984;
   --line: rgba(242, 238, 233, 0.14);
@@ -242,7 +243,7 @@ button {
 .header.is-solid {
   opacity: 1;
   transform: none;
-  background: linear-gradient(rgba(11, 11, 12, 0.85), rgba(11, 11, 12, 0));
+  background: linear-gradient(rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0));
 }
 .header__logo {
   width: 104px;
@@ -268,7 +269,7 @@ button {
   border-radius: 50%;
   border: 1px solid rgba(242, 238, 233, 0.3);
   color: var(--fg);
-  background: rgba(11, 11, 12, 0.35);
+  background: rgba(5, 5, 5, 0.35);
   backdrop-filter: blur(8px);
   transition: background 0.3s, border-color 0.3s, color 0.3s;
 }
@@ -388,7 +389,7 @@ html.intro-active .hero__logo {
   max-width: calc(100svh * 9 / 16);
   margin: 0 auto;
   overflow: hidden;
-  background: #000;
+  background: var(--bg);
   touch-action: pan-y;
 }
 .stories__slide {
@@ -572,7 +573,7 @@ html.intro-active .hero__logo {
 .contacto__shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(11, 11, 12, 0.95) 10%, rgba(11, 11, 12, 0.2) 60%);
+  background: linear-gradient(to top, rgba(5, 5, 5, 0.95) 10%, rgba(5, 5, 5, 0.2) 60%);
 }
 .contacto__content {
   position: absolute;
