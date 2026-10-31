@@ -8,10 +8,10 @@ export const site = {
   description:
     'Juanse Durando, DJ en Santa Fe capital. Fiestas, boliches y eventos privados. Contrataciones por WhatsApp.',
   // Formato internacional sin + ni espacios, ej: 5493425000000
-  whatsapp: 'PENDIENTE',
+  whatsapp: '5493425174121',
   email: 'PENDIENTE',
   socials: {
-    instagram: 'PENDIENTE',
+    instagram: 'https://www.instagram.com/juansedurando',
     tiktok: 'PENDIENTE',
     soundcloud: 'PENDIENTE',
     spotify: 'PENDIENTE',
