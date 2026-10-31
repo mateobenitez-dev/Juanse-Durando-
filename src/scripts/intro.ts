@@ -4,13 +4,12 @@ const SEEN_KEY = 'jd-intro-visto';
 const BEAT = 60 / 124; // segundos por pulso a 124 BPM
 // La mayoría de las visitas llegan desde el navegador de Instagram, donde la paciencia es menor
 const IN_APP = /Instagram|FBAN|FBAV/i.test(navigator.userAgent);
-const MIN_LOAD = IN_APP ? 1 : 1.8; // el contador nunca dura menos que esto
+const MIN_LOAD = IN_APP ? 1 : 1.6; // la barra de carga nunca dura menos que esto
 
 // Imágenes que conviene tener cargadas antes de abrir la página
-const CRITICAL = ['img/intro-1600.webp', 'img/hero-1600.webp'];
+const CRITICAL = ['img/intro-poster.jpg', 'img/hero-800.webp'];
 
 type IntroOptions = {
-  onExitStart?: () => void;
   onDone: () => void;
 };
 
@@ -22,7 +21,7 @@ function preload(src: string) {
   });
 }
 
-export function runIntro({ onExitStart, onDone }: IntroOptions) {
+export function runIntro({ onDone }: IntroOptions) {
   const root = document.getElementById('intro');
   const html = document.documentElement;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -39,11 +38,9 @@ export function runIntro({ onExitStart, onDone }: IntroOptions) {
   const logoInner = q('[data-intro-logo-inner]');
   const scan = q('[data-intro-scan]');
   const bg = q('[data-intro-bg]');
-  const count = q('[data-intro-count]');
+  const bar = q('[data-intro-bar]');
   const enter = q<HTMLButtonElement>('[data-intro-enter]');
-  const skip = q<HTMLButtonElement>('[data-intro-skip]');
   const halves = root.querySelectorAll('[data-intro-half]');
-  const metas = root.querySelectorAll('[data-intro-meta]');
   const heroLogo = document.querySelector<HTMLElement>('[data-hero-logo]');
   const heroMedia = document.querySelector('[data-hero-media]');
   const heroLines = document.querySelectorAll('[data-hero-line]');
@@ -58,15 +55,8 @@ export function runIntro({ onExitStart, onDone }: IntroOptions) {
   let beat: gsap.core.Tween | null = null;
   const intro = gsap.timeline();
 
-  // 1. Entrada: meta, foto de fondo y contador
-  if (seen) {
-    gsap.set(metas, { autoAlpha: 0 });
-    intro.to(bg, { opacity: 1, duration: 0.4 });
-  } else {
-    intro
-      .from(metas, { autoAlpha: 0, y: 10, duration: 0.6, stagger: 0.08 })
-      .fromTo(bg, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1.05, duration: 2.2, ease: 'power2.out' }, 0.2);
-  }
+  // 1. Entrada: video de fondo y barra de carga
+  intro.fromTo(bg, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1.05, duration: seen ? 0.4 : 2.2, ease: 'power2.out' });
 
   const loaded = { n: 0 };
   const progress = { v: 0 };
@@ -95,25 +85,25 @@ export function runIntro({ onExitStart, onDone }: IntroOptions) {
           return;
         }
         beat = gsap.to(logo, { scale: 1.015, duration: BEAT / 2, repeat: -1, yoyo: true, ease: 'power1.out' });
-        gsap.to(enter, { autoAlpha: 1, y: -6, duration: 0.6 });
+        gsap.to(enter, { autoAlpha: 1, duration: 0.6 });
       }, '-=0.2');
   };
 
   if (seen) {
-    gsap.set('.intro__count', { autoAlpha: 0 });
+    gsap.set('.intro__bar', { autoAlpha: 0 });
     assets.then(revealLogo);
   } else {
-    // El contador avanza con la carga real, pero nunca más rápido que MIN_LOAD
+    // La barra avanza con la carga real, pero nunca más rápido que MIN_LOAD
     const tick = () => {
       const t = (performance.now() - start) / 1000;
-      const byTime = Math.min(t / MIN_LOAD, 1) * 100;
-      const byLoad = (loaded.n / CRITICAL.length) * 100;
-      progress.v += (Math.min(byTime, byLoad) - progress.v) * 0.12;
-      const shown = Math.round(progress.v > 99.5 ? 100 : progress.v);
-      count.textContent = String(shown).padStart(3, '0');
-      if (shown >= 100) {
+      const byTime = Math.min(t / MIN_LOAD, 1);
+      const byLoad = loaded.n / CRITICAL.length;
+      progress.v += (Math.min(byTime, byLoad) - progress.v) * 0.15;
+      const done = progress.v > 0.995;
+      gsap.set(bar, { scaleX: done ? 1 : progress.v });
+      if (done) {
         gsap.ticker.remove(tick);
-        gsap.to('.intro__count', { autoAlpha: 0, y: 20, duration: 0.5, delay: 0.2 });
+        gsap.to('.intro__bar', { autoAlpha: 0, duration: 0.4, delay: 0.1 });
         revealLogo();
       }
     };
@@ -127,9 +117,7 @@ export function runIntro({ onExitStart, onDone }: IntroOptions) {
     intro.kill();
     beat?.kill();
     removeListeners();
-    onExitStart?.();
 
-    // Si se saltea antes de tiempo, dejamos el logo completo
     gsap.set(logoInner, { clipPath: 'inset(0 0% 0 0)' });
     gsap.set(scan, { opacity: 0 });
     gsap.set(logo, { scale: 1 });
@@ -148,7 +136,7 @@ export function runIntro({ onExitStart, onDone }: IntroOptions) {
       },
     });
 
-    tl.to([enter, skip, metas, '.intro__count'], { autoAlpha: 0, duration: 0.3 }, 0)
+    tl.to([enter, '.intro__bar'], { autoAlpha: 0, duration: 0.3 }, 0)
       .to(bg, { opacity: 0, scale: 1.2, duration: 0.8, ease: 'power2.in' }, 0)
       .to(halves[0], { yPercent: -100, duration: 1.2, ease: 'expo.inOut' }, 0.15)
       .to(halves[1], { yPercent: 100, duration: 1.2, ease: 'expo.inOut' }, 0.15);
@@ -173,7 +161,7 @@ export function runIntro({ onExitStart, onDone }: IntroOptions) {
     if (heroLines.length) tl.from(heroLines, { autoAlpha: 0, y: 30, duration: 0.9, stagger: 0.08, ease: 'power3.out' }, 0.9);
   }
 
-  // 3. Disparadores: scroll, swipe, teclado o click
+  // 3. Disparadores: scroll, swipe, teclado o tocar en cualquier parte
   let touchY = 0;
   const onWheel = (e: WheelEvent) => {
     if (ready && e.deltaY > 0) exit();
@@ -202,9 +190,6 @@ export function runIntro({ onExitStart, onDone }: IntroOptions) {
   window.addEventListener('touchstart', onTouchStart, { passive: true });
   window.addEventListener('touchmove', onTouchMove, { passive: true });
   window.addEventListener('keydown', onKey);
-  enter.addEventListener('click', exit);
-  skip.addEventListener('click', exit);
-  // En celular, tocar en cualquier parte también entra
   root.addEventListener('click', () => {
     if (ready) exit();
   });
