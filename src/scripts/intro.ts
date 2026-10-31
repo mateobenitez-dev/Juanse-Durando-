@@ -4,7 +4,8 @@ const SEEN_KEY = 'jd-intro-visto';
 const BEAT = 60 / 124; // segundos por pulso a 124 BPM
 // La mayoría de las visitas llegan desde el navegador de Instagram, donde la paciencia es menor
 const IN_APP = /Instagram|FBAN|FBAV/i.test(navigator.userAgent);
-const MIN_LOAD = IN_APP ? 1 : 1.6; // la barra de carga nunca dura menos que esto
+const MIN_LOAD = IN_APP ? 2.2 : 2.8; // la barra de carga nunca dura menos que esto
+const HOLD = 1.5; // segundos con el logo latiendo antes de dejar entrar
 
 // Imágenes que conviene tener cargadas antes de abrir la página
 const CRITICAL = ['img/intro-poster.jpg', 'img/hero-800.webp'];
@@ -56,7 +57,7 @@ export function runIntro({ onDone }: IntroOptions) {
   const intro = gsap.timeline();
 
   // 1. Entrada: video de fondo y barra de carga
-  intro.fromTo(bg, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1.05, duration: seen ? 0.4 : 2.2, ease: 'power2.out' });
+  intro.fromTo(bg, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1.05, duration: seen ? 1 : 3, ease: 'power2.out' });
 
   const loaded = { n: 0 };
   const progress = { v: 0 };
@@ -71,7 +72,7 @@ export function runIntro({ onDone }: IntroOptions) {
 
   const revealLogo = () => {
     const w = logo.offsetWidth;
-    const d = seen ? 0.5 : 1.1;
+    const d = seen ? 1 : 1.8;
     gsap
       .timeline()
       .set(scan, { opacity: 1, x: 0 })
@@ -79,14 +80,17 @@ export function runIntro({ onDone }: IntroOptions) {
       .to(logoInner, { clipPath: 'inset(0 0% 0 0)', duration: d, ease: 'power3.inOut' }, 0)
       .to(scan, { opacity: 0, duration: 0.3 })
       .add(() => {
+        beat = gsap.to(logo, { scale: 1.015, duration: BEAT / 2, repeat: -1, yoyo: true, ease: 'power1.out' });
+      }, '-=0.2')
+      // El logo queda latiendo un rato antes de habilitar la entrada
+      .add(() => {
         ready = true;
         if (seen) {
           exit();
           return;
         }
-        beat = gsap.to(logo, { scale: 1.015, duration: BEAT / 2, repeat: -1, yoyo: true, ease: 'power1.out' });
         gsap.to(enter, { autoAlpha: 1, duration: 0.6 });
-      }, '-=0.2');
+      }, `+=${seen ? HOLD * 0.7 : HOLD}`);
   };
 
   if (seen) {
@@ -137,9 +141,9 @@ export function runIntro({ onDone }: IntroOptions) {
     });
 
     tl.to([enter, '.intro__bar'], { autoAlpha: 0, duration: 0.3 }, 0)
-      .to(bg, { opacity: 0, scale: 1.2, duration: 0.8, ease: 'power2.in' }, 0)
-      .to(halves[0], { yPercent: -100, duration: 1.2, ease: 'expo.inOut' }, 0.15)
-      .to(halves[1], { yPercent: 100, duration: 1.2, ease: 'expo.inOut' }, 0.15);
+      .to(bg, { opacity: 0, scale: 1.2, duration: 1.1, ease: 'power2.in' }, 0)
+      .to(halves[0], { yPercent: -100, duration: 1.8, ease: 'expo.inOut' }, 0.25)
+      .to(halves[1], { yPercent: 100, duration: 1.8, ease: 'expo.inOut' }, 0.25);
 
     if (to) {
       tl.to(
@@ -148,7 +152,7 @@ export function runIntro({ onDone }: IntroOptions) {
           x: to.left - from.left,
           y: to.top - from.top,
           scale: to.width / from.width,
-          duration: 1.3,
+          duration: 1.9,
           ease: 'expo.inOut',
         },
         0,
@@ -157,8 +161,8 @@ export function runIntro({ onDone }: IntroOptions) {
       tl.to(logo, { autoAlpha: 0, duration: 0.5 }, 0);
     }
 
-    if (heroMedia) tl.fromTo(heroMedia, { scale: 1.3 }, { scale: 1, duration: 1.8, ease: 'expo.out' }, 0.3);
-    if (heroLines.length) tl.from(heroLines, { autoAlpha: 0, y: 30, duration: 0.9, stagger: 0.08, ease: 'power3.out' }, 0.9);
+    if (heroMedia) tl.fromTo(heroMedia, { scale: 1.3 }, { scale: 1, duration: 2.4, ease: 'expo.out' }, 0.5);
+    if (heroLines.length) tl.from(heroLines, { autoAlpha: 0, y: 30, duration: 0.9, stagger: 0.1, ease: 'power3.out' }, 1.4);
   }
 
   // 3. Disparadores: scroll, swipe, teclado o tocar en cualquier parte
